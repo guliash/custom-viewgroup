@@ -3,12 +3,34 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent">
 
-    <TextView
+    <ru.yandex.yamblz.ui.custom.HorizontalLinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/content"
-        android:textSize="42sp"
-        android:gravity="center"
-        />
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@android:color/black"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_red_dark"/>
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@android:color/black"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@android:color/holo_blue_dark"/>
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@android:color/holo_green_dark"/>
+        </LinearLayout>
+    </ru.yandex.yamblz.ui.custom.HorizontalLinearLayout>
 
 </FrameLayout>
