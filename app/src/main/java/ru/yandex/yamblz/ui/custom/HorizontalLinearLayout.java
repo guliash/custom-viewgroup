@@ -6,8 +6,20 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * Simple layout which lays views using following rules:
+ * 1) There can be any amount of wrap_content or fixed size width views but only one with match_parent width.
+ * If there is more than one match_parent width view then {@link IllegalArgumentException} is thrown.
+ * 2) Views are laid from left to right. Wrap_content and fixed size width views take as much place as they need,
+ * match_parent width view takes not occupied space
+ * 3) There is no constraints on height of views.
+ * 4) For child views {@link android.view.ViewGroup.LayoutParams} are used.
+ */
 public class HorizontalLinearLayout extends ViewGroup {
 
+    /**
+     * Just temp object for setting coordinates
+     */
     private final Rect tmpRect = new Rect();
 
     public HorizontalLinearLayout(Context context) {
@@ -26,10 +38,16 @@ public class HorizontalLinearLayout extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final int count = getChildCount();
 
+        //view with match_parent width
         View matchParentChild = null;
+        //already filled horizontal space
         int filledHorizontalSpace = 0;
+
         int maxHeight = 0;
         int childState = 0;
+
+        int horizontalPadding = getPaddingLeft() + getPaddingRight();
+        int verticalPadding = getPaddingTop() + getPaddingBottom();
 
         for(int i = 0; i < count; i++) {
             final View child = getChildAt(i);
@@ -39,22 +57,33 @@ public class HorizontalLinearLayout extends ViewGroup {
             }
             LayoutParams layoutParams = child.getLayoutParams();
             if(layoutParams.width != LayoutParams.MATCH_PARENT) {
-                measureChild(child, widthMeasureSpec, heightMeasureSpec, filledHorizontalSpace);
+                child.measure(
+                        getChildWidthMeasureSpec(widthMeasureSpec, horizontalPadding,
+                                filledHorizontalSpace, layoutParams.width),
+                        getChildMeasureSpec(heightMeasureSpec, verticalPadding, layoutParams.height)
+                );
+
                 filledHorizontalSpace += child.getMeasuredWidth();
                 maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
                 childState = combineMeasuredStates(childState, child.getMeasuredState());
             } else if(matchParentChild == null) {
-                //the view with MATCH_PARENT will be measured after the others
+                //the view with match_parent will be measured after the others
                 matchParentChild = child;
             } else {
-                //it's not allowed to have more than one view with MATCH_PARENT
-                throw new IllegalArgumentException("More than one child with MATCH_PARENT");
+                //it's not allowed to have more than one view with match_parent
+                throw new IllegalArgumentException("More than one child with match_parent");
             }
 
         }
 
+        //measure match_parent child after all the others were measured
         if(matchParentChild != null) {
-            measureChild(matchParentChild, widthMeasureSpec, heightMeasureSpec, filledHorizontalSpace);
+            LayoutParams layoutParams = matchParentChild.getLayoutParams();
+            matchParentChild.measure(
+                    getChildWidthMeasureSpec(widthMeasureSpec, horizontalPadding,
+                            filledHorizontalSpace, layoutParams.width),
+                    getChildMeasureSpec(heightMeasureSpec, verticalPadding, layoutParams.height)
+            );
             maxHeight = Math.max(maxHeight, matchParentChild.getMeasuredHeight());
             filledHorizontalSpace += matchParentChild.getMeasuredWidth();
         }
@@ -90,23 +119,23 @@ public class HorizontalLinearLayout extends ViewGroup {
         }
     }
 
-    protected void measureChild(View child, int parentWidthMeasureSpec, int parentHeightMeasureSpec,
-                                int filledHorizontalSpace) {
-        child.measure(
-                getChildWidthMeasureSpec(
-                        parentWidthMeasureSpec, filledHorizontalSpace, child.getLayoutParams().width),
-                getChildHeightMeasureSpec(
-                        parentHeightMeasureSpec, child.getLayoutParams().height));
-    }
-
-    protected int getChildWidthMeasureSpec(int parentWidthMeasureSpec, int filledHorizontalSpace,
+    /**
+     * Makes specs for width of a child. Pretty much like {@link ViewGroup#getChildMeasureSpec(int, int, int)},
+     * except that it checks already occupied space
+     * @param parentWidthMeasureSpec parent width spec
+     * @param padding parent's padding
+     * @param filledHorizontalSpace already filled horizontal space
+     * @param childWidth child desired width
+     * @return specs
+     */
+    protected int getChildWidthMeasureSpec(int parentWidthMeasureSpec, int padding, int filledHorizontalSpace,
                                            int childWidth) {
         int resultSize = 0;
         int resultMode = 0;
 
         final int specMode = MeasureSpec.getMode(parentWidthMeasureSpec);
         final int specSize = MeasureSpec.getSize(parentWidthMeasureSpec);
-        final int spaceLeft = Math.max(0, specSize - filledHorizontalSpace);
+        final int spaceLeft = Math.max(0, specSize - filledHorizontalSpace - padding);
 
         switch (specMode) {
             case MeasureSpec.EXACTLY:
@@ -147,9 +176,5 @@ public class HorizontalLinearLayout extends ViewGroup {
                 break;
         }
         return MeasureSpec.makeMeasureSpec(resultSize, resultMode);
-    }
-
-    protected int getChildHeightMeasureSpec(int parentHeightMeasureSpec, int childHeight) {
-        return getChildMeasureSpec(parentHeightMeasureSpec, 0, childHeight);
     }
 }
