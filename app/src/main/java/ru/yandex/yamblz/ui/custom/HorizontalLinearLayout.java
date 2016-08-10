@@ -99,6 +99,8 @@ public class HorizontalLinearLayout extends ViewGroup {
 
         int leftPos = getPaddingLeft();
 
+        int myHeight = getMeasuredHeight();
+
         for(int i = 0; i < count; i++) {
             final View child = getChildAt(i);
             if(child.getVisibility() == View.GONE) {
@@ -111,7 +113,11 @@ public class HorizontalLinearLayout extends ViewGroup {
             tmpRect.left = leftPos;
             tmpRect.right = leftPos + width;
             tmpRect.top = parentTop;
-            tmpRect.bottom = parentTop + height;
+            if(child.getLayoutParams().height != LayoutParams.MATCH_PARENT) {
+                tmpRect.bottom = parentTop + height;
+            } else {
+                tmpRect.bottom = parentTop + myHeight;
+            }
 
             child.layout(tmpRect.left, tmpRect.top, tmpRect.right, tmpRect.bottom);
 
