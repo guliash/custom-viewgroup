@@ -82,7 +82,7 @@ public class HorizontalLinearLayout extends ViewGroup {
                 );
 
                 filledHorizontalSpace += child.getMeasuredWidth();
-                maxHeight = Math.max(maxHeight, child.getMeasuredHeight() + verticalPadding);
+                maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
                 childState = combineMeasuredStates(childState, child.getMeasuredState());
             } else if (matchParentChild == null) {
                 //the view with match_parent will be measured after the others
@@ -101,7 +101,7 @@ public class HorizontalLinearLayout extends ViewGroup {
                             filledHorizontalSpace, layoutParams.width),
                     getChildMeasureSpec(heightMeasureSpec, verticalPadding, layoutParams.height)
             );
-            maxHeight = Math.max(maxHeight, matchParentChild.getMeasuredHeight() + verticalPadding);
+            maxHeight = Math.max(maxHeight, matchParentChild.getMeasuredHeight());
         }
 
         //now we know all heights of non match_parent height views, then measure them
@@ -134,7 +134,7 @@ public class HorizontalLinearLayout extends ViewGroup {
             childState = combineMeasuredStates(childState, matchParentChild.getMeasuredState());
         }
         setMeasuredDimension(resolveSizeAndState(filledHorizontalSpace, widthMeasureSpec, childState),
-                resolveSizeAndState(maxHeight, heightMeasureSpec, childState << MEASURED_HEIGHT_STATE_SHIFT));
+                resolveSizeAndState(maxHeight + verticalPadding, heightMeasureSpec, childState << MEASURED_HEIGHT_STATE_SHIFT));
     }
 
     @Override

@@ -20,7 +20,7 @@
             android:background="@android:color/holo_red_dark">
             <View
                 android:layout_width="100dp"
-                android:layout_height="200dp"
+                android:layout_height="400dp"
                 android:background="@android:color/holo_orange_light"/>
         </LinearLayout>
         <LinearLayout
