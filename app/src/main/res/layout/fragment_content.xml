@@ -16,12 +16,13 @@
             android:background="@android:color/black"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:background="@android:color/holo_red_dark" />
-        <LinearLayout
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@android:color/black"/>
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_red_dark">
+            <View
+                android:layout_width="100dp"
+                android:layout_height="200dp"
+                android:background="@android:color/holo_orange_light"/>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +33,7 @@
                 android:background="@android:color/holo_blue_dark"/>
             <ImageView
                 android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_height="200dp"
                 android:background="@android:color/holo_green_dark"/>
         </LinearLayout>
     </ru.yandex.yamblz.ui.custom.HorizontalLinearLayout>
